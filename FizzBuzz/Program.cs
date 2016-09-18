@@ -1,21 +1,29 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Collections.Specialized;
+using System.Configuration;
+using System.Linq;
 
 namespace FizzBuzz
 {
   class Program
   {
-    static Dictionary<int, string>  NumberValues = new Dictionary<int,string>(){{3,"Fizz"}, {5, "Buzz"}};
-
+    
     static void Main(string[] args)
     {
+            //read FizzBuzz from Config, can be extended
+            var numberValues1 = ConfigurationManager.GetSection("NumberValues") as Hashtable;
+            var numberValues = numberValues1.Cast<DictionaryEntry>().ToDictionary(kvp => kvp.Key, kvp => kvp.Value)
+                .OrderBy(kvp => kvp.Key);
 
             for (int counter = 1; counter <=100; counter++)
             {
                 string result = string.Empty;
-                foreach (var item in NumberValues)
+                foreach (var item in numberValues)
                 {
-                    result = DivideAndReplace(counter, item.Key, item.Value, result);
+                    //modulus and string replace
+                    result = DivideAndReplace(counter, int.Parse((string)item.Key), (string)item.Value, result);
                 }
                 
                 result = string.IsNullOrEmpty(result) ? counter.ToString() : result;
@@ -31,7 +39,10 @@ namespace FizzBuzz
          return (output == 0 ? result + replaceString : result);
     }
 
-  }
+   
+ }
+
 }
+
 
 
